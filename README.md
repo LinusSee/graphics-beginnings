@@ -11,5 +11,6 @@ Currently I have 3 subgoals, the list might be extended thought.
 <br>
 <br>
 And future goals might be (just noted for now, so I don't forget them)
+
 1. "Chaos equations" - inspired by [CodeParade](https://www.youtube.com/channel/UCrv269YwJzuZL3dH5PCgxUw), for the video see [here](https://www.youtube.com/watch?v=fDSIRXmnVvk)
 2. Boids
