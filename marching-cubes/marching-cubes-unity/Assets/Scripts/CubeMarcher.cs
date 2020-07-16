@@ -11,6 +11,7 @@ public class CubeMarcher : MonoBehaviour
     int[] triangles;
 
     public int xSize = 20;
+    public int ySize = 20;
     public int zSize = 20;
 
     // Start is called before the first frame update
@@ -33,14 +34,18 @@ public class CubeMarcher : MonoBehaviour
     //IEnumerator CreateShape()
     void CreateShape()
     {
-        vertices = new Vector3[(xSize + 1) * (zSize + 1)];
+        vertices = new Vector3[(xSize + 1) * (ySize + 1) * (zSize + 1)];
 
-        for (int i = 0, z = 0; z <= zSize; z++)
+        for (int i = 0, y = 0; y <= ySize; y++)
         {
-            for (int x = 0; x <= xSize; x++, i++)
+            for (int z = 0; z <= zSize; z++)
             {
-                float y = Mathf.PerlinNoise(x * .3f, z * .3f) * 2f;
-                vertices[i] = new Vector3(x, y, z);
+                for (int x = 0; x <= xSize; x++, i++)
+                {
+                    //float y = Mathf.PerlinNoise(x * .3f, z * .3f) * 2f;
+                    //float y = 1;
+                    vertices[i] = new Vector3(x, y, z);
+                }
             }
         }
 
@@ -87,7 +92,7 @@ public class CubeMarcher : MonoBehaviour
         Vector3 position = gameObject.transform.position;
         for (int i = 0; i < vertices.Length; i++)
         {
-            Gizmos.DrawSphere(vertices[i] + position, .1f);
+            Gizmos.DrawSphere(vertices[i] + position, .05f);
         }
     }
 }
