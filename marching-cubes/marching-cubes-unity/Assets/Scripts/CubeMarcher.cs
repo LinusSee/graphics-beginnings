@@ -101,16 +101,16 @@ public class CubeMarcher : MonoBehaviour
                         (grid[vi[1]] + grid[vi[2]]) / 2,
                         (grid[vi[2]] + grid[vi[3]]) / 2,
                         (grid[vi[3]] + grid[vi[0]]) / 2,
-
-                        (grid[vi[0]] + grid[vi[4]]) / 2,
-                        (grid[vi[1]] + grid[vi[5]]) / 2,
-                        (grid[vi[2]] + grid[vi[6]]) / 2,
-                        (grid[vi[3]] + grid[vi[7]]) / 2,
                         
                         (grid[vi[4]] + grid[vi[5]]) / 2,
                         (grid[vi[5]] + grid[vi[6]]) / 2,
                         (grid[vi[6]] + grid[vi[7]]) / 2,
-                        (grid[vi[7]] + grid[vi[4]]) / 2
+                        (grid[vi[7]] + grid[vi[4]]) / 2,
+
+                        (grid[vi[0]] + grid[vi[4]]) / 2,
+                        (grid[vi[1]] + grid[vi[5]]) / 2,
+                        (grid[vi[2]] + grid[vi[6]]) / 2,
+                        (grid[vi[3]] + grid[vi[7]]) / 2
                     };
                     float[] surfaceValues = new float[8];
                     for(int i = 0; i < 8; i++)
@@ -137,11 +137,11 @@ public class CubeMarcher : MonoBehaviour
                         triCount++;
                         //gatheredTriangles.Add(vertexIndices[triTable[cubeIndex][i    ]]);
                         //Debug.Log("triTable1: " + triTable[cubeIndex][i    ]);
-                        gatheredVertices.Add(vert[triTable[cubeIndex][i    ]]);
+                        gatheredVertices.Add(vert[triTable[cubeIndex][i + 2]]);
                         //Debug.Log("triTable2: " + triTable[cubeIndex][i + 1]);
                         gatheredVertices.Add(vert[triTable[cubeIndex][i + 1]]);
                         //Debug.Log("triTable3: " + triTable[cubeIndex][i + 2]);
-                        gatheredVertices.Add(vert[triTable[cubeIndex][i + 2]]);
+                        gatheredVertices.Add(vert[triTable[cubeIndex][i    ]]);
                     }
 
 
@@ -157,8 +157,8 @@ public class CubeMarcher : MonoBehaviour
         //vertices = grid;
         Debug.Log("TriCount: " + triCount);
 
-        triangles = new int[triCount * 0];
-        for(int c = 0; c < 0; c++)
+        triangles = new int[triCount * 3];
+        for(int c = 0; c < triCount; c++)
         {
             /*gatheredTriangles.Add(vertexNew++);
             gatheredTriangles.Add(vertexNew++);
@@ -170,27 +170,7 @@ public class CubeMarcher : MonoBehaviour
             //yield return new WaitForSeconds(1f);
         }
         //triangles = gatheredTriangles.ToArray();
-
-        /*triangles = new int[xSize * zSize * 6];
-
-        int vertex = 0;
-        int triangle = 0;
-        for (int z = 0; z < zSize; z++, vertex++)
-        {
-            for (int x = 0; x < xSize; x++, vertex++, triangle += 6)
-            {
-                triangles[triangle] = vertex;
-                triangles[triangle + 1] = xSize + vertex + 1;
-                triangles[triangle + 2] = vertex + 1;
-
-                triangles[triangle + 3] = vertex + 1;
-                triangles[triangle + 4] = xSize + vertex + 1;
-                triangles[triangle + 5] = xSize + vertex + 2;
-
-                //yield return new WaitForSeconds(0.01f);
-            }
-        }*/
-                }
+    }
 
     void UpdateMesh()
     {
@@ -223,11 +203,11 @@ public class CubeMarcher : MonoBehaviour
 
     private float Surface(Vector3 point)
     {
-        Vector3 center = new Vector3(0, 0, 0);
+        Vector3 center = new Vector3(5, 5, 5);
 
-        Vector3 temp = (point - center);
-        float result = temp.x * temp.x + temp.y * temp.y + temp.z * temp.z;
-        //float result = (point - center).sqrMagnitude;
+        //Vector3 temp = (point - center);
+        //float result = temp.x * temp.x + temp.y * temp.y + temp.z * temp.z;
+        float result = (point - center).sqrMagnitude;
         return result;
     }
 
