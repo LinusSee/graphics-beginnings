@@ -11,12 +11,19 @@ public class CubeMarcher : MonoBehaviour
     Vector3[] vertices;
     int[] triangles;
 
+
+    public int widthX = 20;
+    public int widthY = 20;
+    public int widthZ = 20;
+
+    public int steps = 20;
+
     // Number of quads, not vertices!!
     public int xSize = 20;
     public int ySize = 20;
     public int zSize = 20;
 
-    private float surfaceLevel = 25.0f;
+    private float surfaceLevel = 1.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -32,13 +39,21 @@ public class CubeMarcher : MonoBehaviour
 
     private void Update()
     {
-        //UpdateMesh();
+        UpdateMesh();
     }
 
     //IEnumerator CreateShape()
     void CreateShape()
     {
+        xSize = steps;
+        ySize = steps;
+        zSize = steps;
         int size = (xSize + 1) * (ySize + 1) * (zSize + 1);
+
+        // Currently assuming equals widths and center at (0, 0, 0)
+        float stepSize = (float)widthX / steps;
+        Debug.Log("StepSize: " + stepSize);
+
         Vector3[] grid = new Vector3[size];
 
         for (int i = 0, y = 0; y <= ySize; y++)
@@ -47,33 +62,22 @@ public class CubeMarcher : MonoBehaviour
             {
                 for (int x = 0; x <= xSize; x++, i++)
                 {
-                    //float y = Mathf.PerlinNoise(x * .3f, z * .3f) * 2f;
-                    //float y = 1;
-                    grid[i] = new Vector3(x, y, z);
+                    grid[i] = new Vector3(x*stepSize, y*stepSize, z*stepSize);
                 }
             }
         }
-
+        Debug.Log("LastPoint: " + grid[size - 1]);
 
         List<Vector3> gatheredVertices = new List<Vector3>();
-        List<int> gatheredTriangles = new List<int>();
-        Debug.Log("GridSize: " + size);
+
         int triCount = 0;
-        //int triangle = 0;
         int vertexOld = 0;
-        int vertexNew = 0;
         for(int y = 0; y < ySize; y++)
         {
             for(int z = 0; z < zSize; z++)
             {
                 for(int x = 0; x < xSize; x++)
                 {
-                    /*int[] vertexIndices = {
-                        vertex, vertex + 1,
-                        vertex + xSize, vertex + xSize + 1,
-                        vertex + xSize * zSize, vertex + xSize * zSize + 1,
-                        vertex * xSize * zSize + xSize, vertex + xSize * zSize + xSize + 1
-                    };*/
                     // xSize + 1 == exactely one row further
                     // (xSize + 1) * (zSize + 1) == exactely one level further
                     int[] vi = {
@@ -86,14 +90,6 @@ public class CubeMarcher : MonoBehaviour
                         vertexOld + (xSize + 1) * (zSize + 1)               + 1,
                         vertexOld + (xSize + 1) * (zSize + 1)
                     };
-                    for(int c = 0; c < 8; c++)
-                    {
-                        if(vi[c] >= size)
-                        {
-                            Debug.Log("To large index at pos: " + c);
-                            Debug.Log("Value at pos is: " + vi[c]);
-                        }
-                    }
 
                     Vector3[] vert =
                     {
@@ -132,44 +128,45 @@ public class CubeMarcher : MonoBehaviour
 
                     for(int i = 0; triTable[cubeIndex][i] != -1; i+=3)
                     {
-                        // FIX vertices
-                        //Debug.Log("CubeIndex: " + cubeIndex);
                         triCount++;
-                        //gatheredTriangles.Add(vertexIndices[triTable[cubeIndex][i    ]]);
-                        //Debug.Log("triTable1: " + triTable[cubeIndex][i    ]);
                         gatheredVertices.Add(vert[triTable[cubeIndex][i + 2]]);
-                        //Debug.Log("triTable2: " + triTable[cubeIndex][i + 1]);
-                        gatheredVertices.Add(vert[triTable[cubeIndex][i + 1]]);
-                        //Debug.Log("triTable3: " + triTable[cubeIndex][i + 2]);
+                        gatheredVertices.Add(vert[triTable[cubeIndex][i + 1]]);;
                         gatheredVertices.Add(vert[triTable[cubeIndex][i    ]]);
                     }
 
-
-
                     vertexOld++;
-                    //triangle++; // TODO: Definitely wrong
                 }
                 vertexOld++;
             }
             vertexOld += (xSize + 1);
         }
         vertices = gatheredVertices.ToArray();
-        //vertices = grid;
-        Debug.Log("TriCount: " + triCount);
 
-        triangles = new int[triCount * 3];
-        for(int c = 0; c < triCount; c++)
+
+        int vertexNew = 0;
+        //triangles = new int[triCount * 3];
+        List<int> gatheredTriangles = new List<int>();
+        Debug.Log("VertexCount: " + vertices.Length);
+        Debug.Log("TriCount: " + triCount);
+        Debug.Log("TriVertexCount: " + triCount * 3);
+        for (int c = 0; c < triCount; c++)
         {
-            /*gatheredTriangles.Add(vertexNew++);
-            gatheredTriangles.Add(vertexNew++);
-            gatheredTriangles.Add(vertexNew++);*/
+            /*triangles[vertexNew] = vertexNew++;
             triangles[vertexNew] = vertexNew++;
-            triangles[vertexNew] = vertexNew++;
-            triangles[vertexNew] = vertexNew++;
+            triangles[vertexNew] = vertexNew++;*/
+            gatheredTriangles.Add(vertexNew);
+            vertexNew = vertexNew + 1;
+            gatheredTriangles.Add(vertexNew);
+            vertexNew = vertexNew + 1;
+            gatheredTriangles.Add(vertexNew);
+            vertexNew = vertexNew + 1;
 
             //yield return new WaitForSeconds(1f);
         }
-        //triangles = gatheredTriangles.ToArray();
+        triangles = gatheredTriangles.ToArray();
+        Debug.Log("TriangleListCount: " + gatheredTriangles.Count);
+        Debug.Log("TriangleArrayCount: " + triangles.Length);
+        Debug.Log("VertexNew: " + vertexNew);
     }
 
     void UpdateMesh()
@@ -194,10 +191,7 @@ public class CubeMarcher : MonoBehaviour
         Vector3 position = gameObject.transform.position;
         for (int i = 0; i < vertices.Length; i++)
         {
-            if ((vertices[i] + position).sqrMagnitude < 25.0f)
-            {
-            }
-                Gizmos.DrawSphere(vertices[i] + position, .1f);
+            //Gizmos.DrawSphere(vertices[i] + position, .01f);
         }
     }
 
