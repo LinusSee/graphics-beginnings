@@ -23,7 +23,7 @@ public class CubeMarcher : MonoBehaviour
     public int ySize = 20;
     public int zSize = 20;
 
-    private float surfaceLevel = 1.0f;
+    private float surfaceLevel = 20.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -91,7 +91,7 @@ public class CubeMarcher : MonoBehaviour
                         vertexOld + (xSize + 1) * (zSize + 1)
                     };
 
-                    Vector3[] vert =
+                    /*Vector3[] vert =
                     {
                         (grid[vi[0]] + grid[vi[1]]) / 2,
                         (grid[vi[1]] + grid[vi[2]]) / 2,
@@ -107,7 +107,8 @@ public class CubeMarcher : MonoBehaviour
                         (grid[vi[1]] + grid[vi[5]]) / 2,
                         (grid[vi[2]] + grid[vi[6]]) / 2,
                         (grid[vi[3]] + grid[vi[7]]) / 2
-                    };
+                    };*/
+
                     float[] surfaceValues = new float[8];
                     for(int i = 0; i < 8; i++)
                     {
@@ -122,6 +123,24 @@ public class CubeMarcher : MonoBehaviour
                     if (surfaceValues[5] < surfaceLevel) cubeIndex |= 32;
                     if (surfaceValues[6] < surfaceLevel) cubeIndex |= 64;
                     if (surfaceValues[7] < surfaceLevel) cubeIndex |= 128;
+
+                    Vector3[] vert =
+                    {
+                        InterpolatedVertex(grid[vi[0]], grid[vi[1]], surfaceLevel, surfaceValues[0], surfaceValues[1]),
+                        InterpolatedVertex(grid[vi[1]], grid[vi[2]], surfaceLevel, surfaceValues[1], surfaceValues[2]),
+                        InterpolatedVertex(grid[vi[2]], grid[vi[3]], surfaceLevel, surfaceValues[2], surfaceValues[3]),
+                        InterpolatedVertex(grid[vi[3]], grid[vi[0]], surfaceLevel, surfaceValues[3], surfaceValues[0]),
+
+                        InterpolatedVertex(grid[vi[4]], grid[vi[5]], surfaceLevel, surfaceValues[4], surfaceValues[5]),
+                        InterpolatedVertex(grid[vi[5]], grid[vi[6]], surfaceLevel, surfaceValues[5], surfaceValues[6]),
+                        InterpolatedVertex(grid[vi[6]], grid[vi[7]], surfaceLevel, surfaceValues[6], surfaceValues[7]),
+                        InterpolatedVertex(grid[vi[7]], grid[vi[4]], surfaceLevel, surfaceValues[7], surfaceValues[4]),
+
+                        InterpolatedVertex(grid[vi[0]], grid[vi[4]], surfaceLevel, surfaceValues[0], surfaceValues[4]),
+                        InterpolatedVertex(grid[vi[1]], grid[vi[5]], surfaceLevel, surfaceValues[1], surfaceValues[5]),
+                        InterpolatedVertex(grid[vi[2]], grid[vi[6]], surfaceLevel, surfaceValues[2], surfaceValues[6]),
+                        InterpolatedVertex(grid[vi[3]], grid[vi[7]], surfaceLevel, surfaceValues[3], surfaceValues[7])
+                    };
 
                     int edgeEntry = edgeTable[cubeIndex];
 
@@ -193,6 +212,11 @@ public class CubeMarcher : MonoBehaviour
         {
             //Gizmos.DrawSphere(vertices[i] + position, .01f);
         }
+    }
+
+    private Vector3 InterpolatedVertex(Vector3 p1, Vector3 p2, float surfaceValue, float p1Value, float p2Value)
+    {
+        return p1 + (surfaceValue - p1Value) * (p2 - p1) / (p2Value - p1Value);
     }
 
     private float Surface(Vector3 point)

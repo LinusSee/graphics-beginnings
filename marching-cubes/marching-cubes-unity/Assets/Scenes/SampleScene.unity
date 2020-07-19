@@ -578,7 +578,7 @@ MonoBehaviour:
   widthX: 20
   widthY: 20
   widthZ: 20
-  steps: 400
+  steps: 60
   xSize: 20
   ySize: 20
   zSize: 20
